@@ -1,0 +1,32 @@
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.env
+.env.*
+.idea/
+.vscode/
+*.log
+node_modules/
+*.sqlite3
+.DS_Store
+pip-wheel-metadata/
+*.egg
+*.whl
+
+# macOS
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*
+
+# PyCharm
+.idea/
+
+# pytest
+.pytest_cache/
