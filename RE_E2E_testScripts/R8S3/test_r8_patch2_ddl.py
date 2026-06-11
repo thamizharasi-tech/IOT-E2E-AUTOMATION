@@ -310,5 +310,82 @@ class Test_ddl_v2:
             print("Response status code is not expected. Rather than found: ", response.status_code)
 
 
+class Test_ddl_v3:
 
+    def test1_positive_deep_logging_download_file_user_role_masked_v2(self):
+        print("\n================Start Test Execution================")
+
+        print("----------------------------------------------------------")
+        utc_time = datetime.now()
+        dt = utc_time.strftime("%Y-%m-%d_%H_%M")
+        dt1 = utc_time.strftime("%Y-%m-%d_%H")
+        print("Current date & time :", dt)
+        print("----------------------------------------------------------")
+
+        # ===========================================================================================
+        # Setup network connectivity if network is unreachable on device
+        # ===========================================================================================
+
+        #print("Setup network connectivity if network is unreachable on device : ")
+        #set_network_connectivity_on_device(self, onboardingType, chipsetType, netwrokType)
+
+        # ===========================================================================================
+        # Run tub on device for CRASH ALERT
+        # ===========================================================================================
+        print("----------------------------------------------------------")
+        print("Run CRASH ALERT  stub on device : ")
+
+       # run_paho_command_on_primary_IVI(self, onboardingType, chipsetType, "crash_alert_ddl")
+        #time.sleep(15)
+
+        print("CRASH ALERT stub run process is completed, verify logs for alert details : ")
+        print("----------------------------------------------------------")
+
+        # ===========================================================================================
+        # Pull logs for validations
+        # ===========================================================================================
+        #print("Pull/Fetch device logs for validation : ")
+
+        #pull_logs_from_IVI_device(self, onboardingType, chipsetType)
+
+        #print("Logs are fetched from device to host machine @ desired location ")
+        #print("----------------------------------------------------------")
+
+        # Verify notification msgs & type code in fetched device logs
+        #ls = verify_message_in_log(self, crash_alert_notification_deviceLog_string,
+         #                          crash_alert_notification_deviceLog_string)
+        print(ls)
+
+        cloudEnv = read_cloud_env(self)
+
+        print("----------------------------------------------------------")
+
+        # ===========================================================================================
+        # Cloud side validations
+        # ===========================================================================================
+
+        print("-----------------------------")
+        print("Cloud Side Validations : ")
+        print("-----------------------------")
+
+        # verify live location status & response for single systemId & eventId
+        #systemId = read_vehicleJsonFile(self, "system_id")
+        #systemId = '_Zuty6zrAVcMAk5ICtoZ9'
+
+        print("System Id : ", systemId)
+        print("----------------------------------------------------------------------------")
+
+        # Call verification module to validate alert details
+        # notification_verify_alert_details_v2(self, systemId, crash_categoryName_v2, crash_notification_name_v2,
+        #                                 notification_type, dt, dt1)
+
+        print("Pull/Fetch device logs for validation : ")
+
+        pull_logs_from_IVI_device(self, onboardingType, chipsetType)
+        #time.sleep(60)
+
+        successful_filenames = get_and_download_ddl_file_v2(self, systemId,"DDL_FILE", "TELEMETRY_FILE")
+        #decompress_downloaded_files_from_folder_v2(self, "ROLE_MASKED", successful_filenames)
+        #decompress_downloaded_files_from_folder_v2(self, "ROLE_MASKED", successful_filenames, onboardingType, chipsetType)
+        validate_telemetry_data_from_decompressed_file_v3(self, cloudEnv, successful_filenames, "ROLE_MASKED")
 
