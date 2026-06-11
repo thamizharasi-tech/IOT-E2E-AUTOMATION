@@ -1,0 +1,11 @@
+#!/bin/sh
+
+cd /data/
+export LD_LIBRARY_PATH=./
+
+
+#publish VEHICLE NOT CHARGE ALERT value
+# -------------------- VEHICLE NOT CHARGE ALERT----------------------------
+# VEHICLE NOT CHARGE ALERT
+LD_LIBRARY_PATH=/vendor/lib64/ ./paho_cs_pub -h localhost -p 1883 -t "VHAL_STUB/RECV/VEHICLE" -m  "[{\"id\": 557875296,\"area\": 0,\"value\": 10}]"
+sleep 1

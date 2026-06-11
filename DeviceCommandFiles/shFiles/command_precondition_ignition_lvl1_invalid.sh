@@ -1,0 +1,8 @@
+#!/bin/sh
+
+cd /data/
+export LD_LIBRARY_PATH=./
+
+#ignition lvl1
+LD_LIBRARY_PATH=/vendor/lib64/ ./paho_cs_pub -h localhost -p 1883 -t "VHAL_STUB/RECV/VEHICLE" -m  "[{\"id\": 557875295,\"area\": 0,\"value\": 11}]"
+sleep 1

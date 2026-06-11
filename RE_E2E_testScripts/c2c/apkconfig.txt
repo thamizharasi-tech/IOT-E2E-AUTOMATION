@@ -1,0 +1,102 @@
+{
+    "crash_sms": {
+        "sms_number": 9496326045,
+        "sms_template": {
+            "category_id": 11,
+            "intro": "$sysID ,$uniqueid",
+            "delimit_text": ",",
+            "fields": [
+                "AL_LATITUDE",
+                "AL_LONGITUDE",
+                "AL_ALTITUDE",
+                "AL_BEARING",
+                "AL_VELOCITY",
+                "AL_GPS_STATUS",
+                "AL_GPS_SIGNAL_STRENGTH",
+                "AL_NETWORK_OP_NAME",
+                "AL_TIMESTAMP",
+                "AL_DELTA_DIST_COVERED",
+                "AL_PDOP",
+                "AL_HDOP",
+                "AL_GPS_FIX",
+                "AL_LAT_DIR",
+                "AL_LONG_DIR"
+            ]
+        }
+    },
+    "sos_sms": {
+        "sms_number": 9999999999,
+        "sms_template": {
+            "category_id": 12,
+            "intro": "$sysID ,$uniqueid",
+            "delimit_text": "|",
+            "fields": [
+                "AL_LATITUDE",
+                "AL_LONGITUDE",
+                "AL_ALTITUDE",
+                "AL_BEARING",
+                "AL_VELOCITY",
+                "AL_GPS_STATUS",
+                "AL_GPS_SIGNAL_STRENGTH",
+                "AL_NETWORK_OP_NAME",
+                "AL_TIMESTAMP",
+                "AL_DELTA_DIST_COVERED",
+                "AL_PDOP",
+                "AL_HDOP",
+                "AL_GPS_FIX",
+                "AL_LAT_DIR",
+                "AL_LONG_DIR"
+            ]
+        }
+    },
+    "towaway_sms": {
+        "sms_number": 9446530056,
+        "sms_template": {
+            "category_id": 13,
+            "intro": "$sysID ,$uniqueid",
+            "delimit_text": ",",
+            "fields": [
+                "AL_LATITUDE",
+                "AL_LONGITUDE",
+                "AL_ALTITUDE",
+                "AL_BEARING",
+                "AL_VELOCITY",
+                "AL_GPS_STATUS",
+                "AL_GPS_SIGNAL_STRENGTH",
+                "AL_NETWORK_OP_NAME",
+                "AL_TIMESTAMP",
+                "AL_DELTA_DIST_COVERED",
+                "AL_PDOP",
+                "AL_HDOP",
+                "AL_GPS_FIX",
+                "AL_LAT_DIR",
+                "AL_LONG_DIR"
+            ]
+        }
+    },
+    "heartbeat_sms": {
+        "sms_number": 9446530056,
+        "sms_template": {
+            "category_id": 14,
+            "intro": "$sysID ,$uniqueid",
+            "delimit_text": "|",
+            "fields": [
+                "AL_LATITUDE",
+                "AL_LONGITUDE",
+                "AL_ALTITUDE",
+                "AL_BEARING",
+                "AL_VELOCITY",
+                "AL_GPS_STATUS",
+                "AL_GPS_SIGNAL_STRENGTH",
+                "AL_NETWORK_OP_NAME",
+                "AL_TIMESTAMP",
+                "AL_DELTA_DIST_COVERED",
+                "AL_PDOP",
+                "AL_HDOP",
+                "AL_GPS_FIX",
+                "AL_LAT_DIR",
+                "AL_LONG_DIR"
+            ]
+        }
+    }
+}

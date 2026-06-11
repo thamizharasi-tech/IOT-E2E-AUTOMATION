@@ -1,0 +1,38 @@
+#
+# Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+# All Rights Reserved.
+# Confidential and Proprietary - Qualcomm Technologies, Inc.
+#
+FILE_VERSION=01.00
+chipset_name=ivi
+notify_destination=cluster_app
+#Below parameter will accept only y as flag enable and rest disable
+#To enable the imei and iccid precondition check for onboarding
+enable_prereq_imei_iccid_check=y
+#To enable the ignition precondition check for onboarding
+enable_prereq_ign_check=y
+#To enable the gps fix precondition check for onboarding
+enable_prereq_gps_check=y
+#telemetry_log=y
+schema_validation=y
+#To set the mqtt session expiry
+session_expiry_in_days=1
+#1=VIN_THROUGH_A2A,2=VIN_THROUGH_VHAL,3=VIN_THROUGH_SIDELOAD
+vin_fetch_method=1
+tele_buff_file_size=2560
+#min_prov_retrans_time is in seconds
+#min_prov_retrans_time=120
+#max_prov_retrans_time is in seconds
+#max_prov_retrans_time=360
+#encryption_ena=y
+#compression_level=3
+#comm_port=8883
+#disable_cld_connection=y
+#for log_manager
+#0=tls disabled, 1=tls disabled but using credentials, 2=tls enabled,3 = gcp enabled clearblade(tls with credential), 4 = gcp enabled emqx(tls with credential),by default 2
+#cloud_tls_support=2
+#local_broker=0				// 0=edgehub broker, 1=customer specific broker
+#broker_username=admin		//broker connecting username
+#broker_password=admin123	//broker connecting password
+#topic_prestring=bcds/mmc	//new topic where cloud will be listening, should be empty for default device/+/out
+#nonce=69F13A6BE773836B775E3A7876F41EDE253596B0D0B0C5504078D75C52E69F16

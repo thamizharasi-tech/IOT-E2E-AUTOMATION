@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<carota>
+    <psrv>https://ota-api-cbp-in-dv1.royalenfield.com</psrv>
+    <port>20002</port>
+
+  <!--Download Manager Service-->
+  <node id="dm">
+        <name>ota_dm_composite</name>
+        <retry>3</retry>
+	<dir>/data/ota_package</dir>
+    </node>
+
+    <!--Service HUB : type : rpc, skt-->
+    <node id="hub" type="rpc" enabled="true">
+        <name>ota_proxy</name>
+        <addr>127.0.0.1</addr>
+        <port>20002</port>
+    </node>
+
+    <!--Master Download Agent Service-->
+    <node id="mda" enabled="true">
+        <name>ota_mda</name>
+        <dm name="dm_composite"> </dm>
+        <vsi>vsi_composite</vsi>
+        <bom>/v3/vin/boms</bom>
+        <conn>/v0/vconnect</conn>
+        <check>/v0/check/schedule</check>
+        <secure enabled="true">composite</secure>
+        <timeout>1800</timeout> <!-- Sec -->
+    </node>
+
+    <!--OTA SYSTEM ROUTE-->
+    <node id="vsi" enabled="true">
+        <name>ota_vsi_composite</name>
+    </node>
+
+    <node id="analytics">
+        <event enabled="false">/v0/data</event>
+        <log enabled="false">/v0/data</log>
+        <custom enabled="false">/v0/data/vin</custom>
+    </node>
+
+    <node id="route">
+        <eth name="composite">ota_composite</eth>
+
+        <veth name="dm_composite">ota_dm_composite</veth>
+        <vcan name="vsi_composite">ota_vsi_composite</vcan>
+    </node>
+
+    <node id="ras" type="composite">
+        <name>ota_composite</name>
+        <timeout>300</timeout> <!-- Sec -->
+    </node>
+
+    <node id="rsm">
+        <name>ota_rsm</name>
+    </node>
+
+    <node id="vsm">
+        <event>vsi_composite</event>
+        <info>vsi_composite</info>
+        <condition>vsi_composite</condition>
+    </node>
+</carota>

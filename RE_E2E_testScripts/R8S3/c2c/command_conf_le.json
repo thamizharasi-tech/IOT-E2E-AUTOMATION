@@ -1,0 +1,254 @@
+{
+    "vehicle_settings": {
+        "config_version": "1.0.0",
+        "last_updated_time": 1735669800000,
+        "remote_operations": {
+            "normal_mode": {
+                "condition": {
+                    "0": {
+                        "d_device": 4,
+                        "area_device": 0,
+                        "oper_req": 1,
+                        "dtype_dev": 1,
+                        "datatype": 1,
+                        "area_req": 0,
+                        "cond_idx": 0,
+                        "cond_desc": "IGNITION",
+                        "oper_device": 1,
+                        "area_id": 0,
+                        "d_req": 1,
+                        "property_id": 557875295
+                    },
+                    "1": {
+                        "d_device": 4,
+                        "area_device": 0,
+                        "oper_req": 3,
+                        "dtype_dev": 1,
+                        "datatype": 1,
+                        "area_req": 0,
+                        "cond_idx": 1,
+                        "cond_desc": "IGNITION",
+                        "oper_device": 1,
+                        "area_id": 0,
+                        "d_req": 0,
+                        "property_id": 557875295
+                    }
+                },
+                "condition_ids": [
+                ],
+                "commands": {
+                    "2501": {
+                        "postcondition": {
+                            "condition_checklist": [],
+                            "type": -1
+                        },
+                        "enable_cmd": true,
+                        "message_ccid": 2501,
+                        "prop_id": 557846338,
+                        "command_name": "IGNITION",
+                        "timeout_ms": 1000,
+                        "precondition": {
+                            "condition_checklist": [
+                                0
+                            ],
+                            "type": 0
+                        }
+                    }
+                },
+                "command_ids": [
+                    "2501"
+                ]
+            },
+            "vacation_mode": {
+                "commands": {
+                    "65535": {
+                        "postcondition": {
+                            "condition_checklist": [],
+                            "type": -1
+                        },
+                        "enable_cmd": true,
+                        "message_ccid": 65535,
+                        "prop_id": 0,
+                        "command_name": "END",
+                        "timeout_ms": 10000,
+                        "precondition": {
+                            "condition_checklist": [],
+                            "type": -1
+                        }
+                    }
+                },
+                "command_ids": [
+                    "65535"
+                ]
+            },
+            "privacy_mode": {
+                "condition": {
+                    "0": {
+                        "d_device": 4,
+                        "area_device": 0,
+                        "oper_req": 1,
+                        "dtype_dev": 2,
+                        "datatype": 1,
+                        "area_req": 0,
+                        "cond_idx": 0,
+                        "cond_desc": "IGNITION",
+                        "oper_device": 1,
+                        "area_id": 0,
+                        "d_req": 1,
+                        "property_id": 557875295
+                    },
+                    "1": {
+                        "d_device": 4,
+                        "area_device": 0,
+                        "oper_req": 3,
+                        "dtype_dev": 1,
+                        "datatype": 1,
+                        "area_req": 0,
+                        "cond_idx": 1,
+                        "cond_desc": "IGNITION",
+                        "oper_device": 1,
+                        "area_id": 0,
+                        "d_req": 0,
+                        "property_id": 557875295
+                    }
+                },
+                "condition_ids": [
+                ],
+                "commands": {
+                    "2501": {
+                        "postcondition": {
+                            "condition_checklist": [],
+                            "type": -1
+                        },
+                        "enable_cmd": true,
+                        "message_ccid": 2501,
+                        "prop_id": 557846338,
+                        "command_name": "IGNITION",
+                        "timeout_ms": 1000,
+                        "precondition": {
+                            "condition_checklist": [
+                                0
+                            ],
+                            "type": 0
+                        }
+                    }
+                },
+                "command_ids": [
+                    "2501"
+                ]
+            },
+            "incognito_mode": {
+                "condition": {
+                    "0": {
+                        "d_device": 4,
+                        "area_device": 0,
+                        "oper_req": 1,
+                        "dtype_dev": 2,
+                        "datatype": 1,
+                        "area_req": 0,
+                        "cond_idx": 0,
+                        "cond_desc": "IGNITION",
+                        "oper_device": 1,
+                        "area_id": 0,
+                        "d_req": 1,
+                        "property_id": 557875295
+                    },
+                    "1": {
+                        "d_device": 4,
+                        "area_device": 0,
+                        "oper_req": 3,
+                        "dtype_dev": 1,
+                        "datatype": 1,
+                        "area_req": 0,
+                        "cond_idx": 1,
+                        "cond_desc": "IGNITION",
+                        "oper_device": 1,
+                        "area_id": 0,
+                        "d_req": 0,
+                        "property_id": 557875295
+                    }
+                },
+                "condition_ids": [
+                ],
+                "commands": {
+                    "2501": {
+                        "postcondition": {
+                            "condition_checklist": [],
+                            "type": -1
+                        },
+                        "enable_cmd": true,
+                        "message_ccid": 2501,
+                        "prop_id": 557846338,
+                        "command_name": "IGNITION",
+                        "timeout_ms": 1000,
+                        "precondition": {
+                            "condition_checklist": [
+                                0
+                            ],
+                            "type": 0
+                        }
+                    }
+                },
+                "command_ids": [
+                    "2501"
+                ]
+            },
+            "remote_diagnostic_mode": {
+                "condition": {
+                    "0": {
+                        "d_device": 4,
+                        "area_device": 0,
+                        "oper_req": 1,
+                        "dtype_dev": 2,
+                        "datatype": 1,
+                        "area_req": 0,
+                        "cond_idx": 0,
+                        "cond_desc": "IGNITION",
+                        "oper_device": 1,
+                        "area_id": 0,
+                        "d_req": 1,
+                        "property_id": 557875295
+                    },
+                    "1": {
+                        "d_device": 4,
+                        "area_device": 0,
+                        "oper_req": 3,
+                        "dtype_dev": 1,
+                        "datatype": 1,
+                        "area_req": 0,
+                        "cond_idx": 1,
+                        "cond_desc": "IGNITION",
+                        "oper_device": 1,
+                        "area_id": 0,
+                        "d_req": 0,
+                        "property_id": 557875295
+                    }
+                },
+                "condition_ids": [
+                ],
+                "commands": {
+                    "2501": {
+                        "postcondition": {
+                            "condition_checklist": [],
+                            "type": -1
+                        },
+                        "enable_cmd": true,
+                        "message_ccid": 2501,
+                        "prop_id": 557846338,
+                        "command_name": "IGNITION",
+                        "timeout_ms": 1000,
+                        "precondition": {
+                            "condition_checklist": [
+                                0
+                            ],
+                            "type": 0
+                        }
+                    }
+                },
+                "command_ids": [
+                    "2501"
+                ]
+            }
+        }
+    }
+}

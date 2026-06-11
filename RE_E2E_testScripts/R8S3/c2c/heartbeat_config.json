@@ -1,0 +1,11 @@
+{  "app_names": [ 
+      "c2c_hub", 
+      "dm", 
+      "ota_manager" ,
+      "sota_manager" ,
+      "com.android.music",
+      "com.android.bluetooth",
+      "com.android.phone"
+    ], 
+    "capture_freq": 60, 
+    "upload_freq": 600 } 

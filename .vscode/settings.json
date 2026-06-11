@@ -1,0 +1,9 @@
+{
+    "python.defaultInterpreterPath": "C:\\Users\\ragurama\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+    "python.pythonPath": "C:\\Users\\ragurama\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+    "python.testing.pytestArgs": [
+        "RE_E2E_testScripts"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
+}
