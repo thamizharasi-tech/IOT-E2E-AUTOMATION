@@ -1236,6 +1236,7 @@ telemetry_attribute_speed1 = "Display_info__Display_Vehicle_Speed_RX_V"
 telemetry_over_speed_value = "130"
 telemetry_over_speed_reason_code = "103"
 b2c_telemetry_over_speed_attribute = "constr_and_send_proto_msg success for 4445 : 103 : 0"
+b2c_telemetry_over_speed_event = "4445"
 
 # Odometer data
 telemetry_odometer_reason_code = "24"

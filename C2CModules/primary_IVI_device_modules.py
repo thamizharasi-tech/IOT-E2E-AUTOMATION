@@ -2917,7 +2917,7 @@ def read_telemetryConfJsonFile(self,cloudEnv, attribute, mode):
         c2cTelemetryConfFile = C2CtestReport_DeviceOnbrdng_backupPath + r'ivi_files\c2c\telemetry_conf.json'
         with open(c2cTelemetryConfFile, 'r') as file:
             json_data = json.load(file)
-            if cloudEnv not in ["GCP-QA2"]:
+            if cloudEnv not in r8_patch4_sp17_envs:
                 if mode == "normalMode":
                     if attribute == "pushFrequencyUpdate_3101":
                         attribute_value = json_data['vehicle_settings']["telemetry"]['normal_mode']['events']['3101'][
@@ -2977,29 +2977,29 @@ def read_telemetryConfJsonFile(self,cloudEnv, attribute, mode):
                             'push_freq']['normal_mode']
                     elif attribute == "batchFrequencyUpdate_3101":
                         attribute_value = \
-                        json_data['vehicle_settings']["telemetry"]['normal_mode']['events']['3101'][
+                        json_data['vehicle_settings']["telemetry"]['events']['3101'][
                             'batch_frequency']
                     elif attribute == "enabled_flag_3101":
                         attribute_value = \
-                        json_data['vehicle_settings']["telemetry"]['normal_mode']['events']['3101'][
-                            'enable_flag']
+                        json_data['vehicle_settings']["telemetry"]['events']['3101'][
+                            'enable_flag']['normal_mode']
                     elif attribute == "add_new_block" or attribute == "remove_new_block":
-                        attribute_value = json_data['vehicle_settings']['telemetry']['normal_mode']['events']
+                        attribute_value = json_data['vehicle_settings']['telemetry']['events']
                 elif mode == "vacationMode":
                     if attribute == "pushFrequencyUpdate_3101":
                         attribute_value = \
-                        json_data['vehicle_settings']["telemetry"]['vacation_mode']['events']['3101'][
-                            'push_freq']
+                        json_data['vehicle_settings']["telemetry"]['events']['3101'][
+                            'push_freq']['vacation_mode']
                     elif attribute == "batchFrequencyUpdate_3101":
                         attribute_value = \
-                        json_data['vehicle_settings']["telemetry"]['vacation_mode']['events']['3101'][
+                        json_data['vehicle_settings']["telemetry"]['events']['3101'][
                             'batch_frequency']
                     elif attribute == "enabled_flag_3101":
                         attribute_value = \
-                        json_data['vehicle_settings']["telemetry"]['vacation_mode']['events']['3101'][
-                            'enable_flag']
+                        json_data['vehicle_settings']["telemetry"]['events']['3101'][
+                            'enable_flag']['vacation_mode']
                     elif attribute == "add_new_block" or attribute == "remove_new_block":
-                        attribute_value = json_data['vehicle_settings']['telemetry']['vacation_mode']['events']
+                        attribute_value = json_data['vehicle_settings']['telemetry']['events']
                 elif mode == "privacyMode":
                     if attribute == "pushFrequencyUpdate_1001":
                         attribute_value = \
@@ -3007,33 +3007,33 @@ def read_telemetryConfJsonFile(self,cloudEnv, attribute, mode):
                             'push_freq']
                     if attribute == "pushFrequencyUpdate_6500":
                         attribute_value = \
-                        json_data['vehicle_settings']["telemetry"]['privacy_mode']['events']['6500'][
-                            'push_freq']
-                    elif attribute == "batchFrequencyUpdate_1001":
+                        json_data['vehicle_settings']["telemetry"]['events']['6500'][
+                            'push_freq']['privacy_mode']
+                    elif attribute == "batchFrequencyUpdate_6500":
                         attribute_value = \
-                        json_data['vehicle_settings']["telemetry"]['privacy_mode']['events']['1001'][
+                        json_data['vehicle_settings']["telemetry"]['events']['6500'][
                             'batch_frequency']
-                    elif attribute == "enabled_flag_1001":
+                    elif attribute == "enabled_flag_6500":
                         attribute_value = \
-                        json_data['vehicle_settings']["telemetry"]['privacy_mode']['events']['1001'][
-                            'enable_flag']
+                        json_data['vehicle_settings']["telemetry"]['events']['6500'][
+                            'enable_flag']['privacy_mode']
                     elif attribute == "add_new_block" or attribute == "remove_new_block":
-                        attribute_value = json_data['vehicle_settings']['telemetry']['privacy_mode']['events']
+                        attribute_value = json_data['vehicle_settings']['telemetry']['events']
                 elif mode == "incognitoMode":
                     if attribute == "pushFrequencyUpdate_3101":
                         attribute_value = \
-                        json_data['vehicle_settings']["telemetry"]['incognito_mode']['events']['3101'][
-                            'push_freq']
+                        json_data['vehicle_settings']["telemetry"]['events']['3101'][
+                            'push_freq']['incognito_mode']
                     elif attribute == "batchFrequencyUpdate_3101":
                         attribute_value = \
-                        json_data['vehicle_settings']["telemetry"]['incognito_mode']['events']['3101'][
+                        json_data['vehicle_settings']["telemetry"]['events']['3101'][
                             'batch_frequency']
                     elif attribute == "enabled_flag_3101":
                         attribute_value = \
-                        json_data['vehicle_settings']["telemetry"]['incognito_mode']['events']['3101'][
-                            'enable_flag']
+                        json_data['vehicle_settings']["telemetry"]['events']['3101'][
+                            'enable_flag']['incognito_mode']
                     elif attribute == "add_new_block" or attribute == "remove_new_block":
-                        attribute_value = json_data['vehicle_settings']['telemetry']['incognito_mode']['events']
+                        attribute_value = json_data['vehicle_settings']['telemetry']['events']
 
     except:
         print("Something went wrong while reading telemetry_conf.json file")

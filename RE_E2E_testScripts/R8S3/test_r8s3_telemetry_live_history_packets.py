@@ -88,7 +88,7 @@ class Test_R8S3_TelemetryPersistHistory:
         # Read systemId from vehicle.json file
         systemId = read_vehicleJsonFile(self, "system_id")
         #systemId = "7238"
-        start_time = int(datetime.now(tz=timezone.utc).timestamp()) * 1000 - 100000
+        start_time = int(datetime.now(tz=timezone.utc).timestamp()) * 1000 -100000
         #start_time = 1742664600000
 
         #end_time = 1742666400000

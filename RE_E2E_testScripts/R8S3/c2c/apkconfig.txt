@@ -1,17 +1,18 @@
 {
     "crash_sms": {
-        "sms_number": 9999999999,
+        "sms_number": "7397576051",
+        "category_id": "14",
         "sms_template": {
-            "intro": "$sysID ,$uniqueid",
-            "delimit_text": ",",
+            "intro": "Emergency SMS with Unique ID $uniqueid for VIN $vin",
+            "delimit_text": "with",
             "fields": [
                 "AL_LATITUDE",
                 "AL_LONGITUDE",
-		"AL_GPS_SIGNAL_STRENGTH",
                 "AL_ALTITUDE",
                 "AL_BEARING",
                 "AL_VELOCITY",
                 "AL_GPS_STATUS",
+                "AL_GPS_SIGNAL_STRENGTH",
                 "AL_NETWORK_OP_NAME",
                 "AL_TIMESTAMP",
                 "AL_DELTA_DIST_COVERED",
@@ -29,9 +30,9 @@
             "intro": "$sysID,$uniqueid",
             "delimit_text": "-",
             "fields": [
-               "AL_LATITUDE",
+                "AL_LATITUDE",
                 "AL_LONGITUDE",
-		"AL_GPS_SIGNAL_STRENGTH",
+                "AL_GPS_SIGNAL_STRENGTH",
                 "AL_ALTITUDE",
                 "AL_BEARING",
                 "AL_VELOCITY",
@@ -44,8 +45,6 @@
                 "AL_GPS_FIX",
                 "AL_LAT_DIR",
                 "AL_LONG_DIR"
-
-
             ]
         }
     },

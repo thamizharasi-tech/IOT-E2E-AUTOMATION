@@ -6,6 +6,7 @@ import requests
 
 from C2CModules.api_modules import header_update
 from C2CModules.resuse_modules import save_api_resp_into_file
+from C2CModules.telemetry_persistance import get_telemetry_history_details
 from utils.XLUtils import read_api_data_from_excel, save_api_resp_in_excel
 from C2CModules.testResults import testResult
 from C2CModules.primary_IVI_device_modules import *
@@ -3403,6 +3404,9 @@ def vehicle_conf_telemetry_push_frequency_update(self, onboardingType, chipsetTy
             value_dict["push_freq"] = push_freq = 20000
             # Serialize back into a JSON string
             updated_value = json.dumps(value_dict)
+        elif cloudEnv in ["GCP-QA2"]:
+            path = "vehicle_settings.telemetry.events.3101.push_freq.vacation_mode"
+            value = updated_value = push_freq = 20000
         else:
             path = "vehicle_settings.telemetry.vacation_mode.events.3101.push_freq"
             value = updated_value = push_freq = 20000
@@ -3415,6 +3419,9 @@ def vehicle_conf_telemetry_push_frequency_update(self, onboardingType, chipsetTy
             value_dict["push_freq"] = push_freq = 11000
             # Serialize back into a JSON string
             updated_value = json.dumps(value_dict)
+        elif cloudEnv in ["GCP-QA2"]:
+            path = "vehicle_settings.telemetry.events.6500.push_freq.privacy_mode"
+            value = updated_value = push_freq = 11000
         else:
             path = "vehicle_settings.telemetry.privacy_mode.events.6500.push_freq"
             value = updated_value = push_freq = 11000
@@ -3662,7 +3669,7 @@ def vehicle_conf_telemetry_push_frequency_update(self, onboardingType, chipsetTy
     response = vehicleConfigurations_getConfig_new(self, systemId, "telemetry_conf")
 
     # Parse API response into JSON
-    response_body = response.json()
+    #response_body = response.json()
 
     # Validate response status code
     if response.status_code == 200:
@@ -3671,11 +3678,15 @@ def vehicle_conf_telemetry_push_frequency_update(self, onboardingType, chipsetTy
 
         # Validate response message
         if response_body["message"] == "Success":
-            vehicle_features = ""
-            if cloudEnv not in ["GCP-QA2"]:
+
+            # FIX: normalize tc value
+            tc = tc.strip().lower().replace(" ", "_")
+
+            vehicle_features = None
+
+            if cloudEnv not in r8_patch4_sp17_envs:
                 telemetry = response_body["configurations"]["vehicle_settings"]["telemetry"]
 
-                # ✅ NEW PATH SUPPORT
                 if tc == "normal_mode":
                     vehicle_features = telemetry["events"]["3101"]["push_freq"]["normal_mode"]
 
@@ -3684,6 +3695,14 @@ def vehicle_conf_telemetry_push_frequency_update(self, onboardingType, chipsetTy
 
                 elif tc == "privacy_mode":
                     vehicle_features = telemetry["events"]["3101"]["push_freq"]["privacy_mode"]
+
+                else:
+                    testResult(
+                        self, "failed",
+                        "Invalid mode",
+                        f"Unsupported tc value: {tc}"
+                    )
+                    assert False
 
                 # ---- Validation ----
                 if vehicle_features == push_freq:
@@ -3701,66 +3720,61 @@ def vehicle_conf_telemetry_push_frequency_update(self, onboardingType, chipsetTy
                     )
                     assert False
 
-
             else:
+                telemetry = response_body["configurations"]["vehicle_settings"]["telemetry"]
 
                 if tc == "normal_mode":
-                    vehicle_features = \
-                        response_body["configurations"]["vehicle_settings"]["telemetry"]["events"][
-                            "3101"]["push_freq"]["normal_mode"]
+                    vehicle_features = telemetry["events"]["3101"]["push_freq"]["normal_mode"]
+
                 elif tc == "vacation_mode":
-                    vehicle_features = \
-                        response_body["configurations"]["vehicle_settings"]["telemetry"]["vacation_mode"]["events"][
-                            "3101"]
+                    vehicle_features = telemetry["vacation_mode"]["events"]["3101"]["push_freq"]
+
                 elif tc == "privacy_mode":
-                    if cloudEnv not in ["GCP-QA3", "GCP-QA4", "GCP-QA5", "RE-DEV", "RE-DM1", "GCP-QA8", "RE-UAT",
-                                        "GCP-PERF2"]:
-                        vehicle_features = \
-                            response_body["configurations"]["vehicle_settings"]["telemetry"]["privacy_mode"][
-                                "events"][
-                                "1001"]
+                    if any(cloudEnv in lst for lst in
+                           (r8_envs, r8_patch1_envs, r8_patch2_envs, r8_patch3_envs, r8_patch_envs_hmac)):
+                        vehicle_features = telemetry["events"]["6500"]["push_freq"]["privacy_mode"]
                     else:
-                        vehicle_features = \
-                            response_body["configurations"]["vehicle_settings"]["telemetry"]["privacy_mode"][
-                                "events"][
-                                "6500"]
+                        vehicle_features = telemetry["privacy_mode"]["events"]["6500"]["push_freq"]
 
-
-                    # Check if 'push_freq' key exists
-                    if "push_freq" in vehicle_features:
-                        if vehicle_features['push_freq'] == push_freq:
-                            testResult(self, "passed",
-                                       "Push frequency should be updated in telemetry_conf.json file on device for event 3101",
-                                       "Push frequency is updated in telemetry_conf.json file on device for event 3101.")
-                            assert True
-                        else:
-                            # Fail the test if 'push_freq' value does not match
-                            testResult(self, "failed",
-                                       "Push frequency should match the expected value",
-                                       f"Push frequency value mismatch: Expected {push_freq}, Found {vehicle_features['push_freq']}.")
-                            # self.result.set_result(TestResults.failed)
-                            assert False, f"Push frequency mismatch: Expected {[push_freq]}, Found {vehicle_features['push_freq']}."
-                    else:
-                        # Fail the test if 'push_freq' key is missing
-                        testResult(self, "failed",
-                                   "Push frequency should be updated in telemetry_conf.json file on device for event 3101",
-                                   "Push frequency key is missing in telemetry_conf.json file for event 3101.")
-                        # self.result.set_result(TestResults.failed)
-                        assert False, "'push_freq' key is missing in telemetry_conf.json."
                 else:
-                    # Fail the test for unexpected response message
-                    testResult(self, "failed",
-                               "Push frequency should be updated in telemetry_conf.json file on device for event 3101",
-                               f"Unexpected response message: {response_body.get('message', 'No message available')}.")
-                    # self.result.set_result(TestResults.failed)
-                    assert False, f"Unexpected response message: {response_body.get('message', 'No message available')}."
+                    testResult(
+                        self, "failed",
+                        "Invalid mode",
+                        f"Unsupported tc value: {tc}"
+                    )
+                    assert False
+
+                # ---- Validation ----
+                if vehicle_features == push_freq:
+                    testResult(
+                        self, "passed",
+                        "Push frequency should be updated in telemetry_conf.json file on device for event 3101",
+                        "Push frequency is updated in telemetry_conf.json file on device for event 3101."
+                    )
+                    assert True
+                else:
+                    testResult(
+                        self, "failed",
+                        "Push frequency should match the expected value",
+                        f"Push frequency mismatch: Expected {push_freq}, Found {vehicle_features}"
+                    )
+                    assert False
+
         else:
-            # Fail the test for invalid status code
-            testResult(self, "failed",
-                       "Push frequency should be updated in telemetry_conf.json file on device for event 3101",
-                       f"API call failed with status code {response.status_code}.")
-            # self.result.set_result(TestResults.failed)
-            assert False, f"API call failed with status code {response.status_code}."
+            testResult(
+                self, "failed",
+                "Push frequency should be updated in telemetry_conf.json file on device for event 3101",
+                f"Unexpected response message: {response_body.get('message', 'No message available')}."
+            )
+            assert False
+
+    else:
+        testResult(
+            self, "failed",
+            "Push frequency should be updated in telemetry_conf.json file on device for event 3101",
+            f"API call failed with status code {response.status_code}."
+        )
+        assert False
 
 def vehicle_mode_set_via_cloud_v2(self, cloudEnv, onboardingType, chipsetType, systemId, action, path, enabled,
                                   start_time,
@@ -4277,6 +4291,114 @@ def validate_device_telemetry_message(self, telemetry_msgs, event_id, push_freq)
             print(f"Event {i} to Event {i + 1}: {diff} seconds.")
     else:
         print("No time differences were calculated. Ensure multiple log entries exist.")
+
+def validate_device_telemetry_message_v2(self, systemId, eventType, start, stop, offset, limit, push_freq):
+    # Call reusable module
+    response = get_telemetry_history_details(self, systemId, eventType, start, stop, offset, limit, "valid")
+
+    response_body = response.json()
+
+    print("*" * 50)
+    print("Validation telemetry push frequency using API response:")
+    print("*" * 50)
+
+    timestamps = []
+
+    # Extract timestamps
+    for entry in response_body.get("telemetryHistoryDataList", []):
+        time_val = entry.get("time")
+
+        if time_val:
+            try:
+                timestamp = datetime.fromtimestamp(time_val / 1000)
+                timestamps.append(timestamp)
+                print(f"Extracted Time: {timestamp}")
+            except Exception as e:
+                print(f"Time conversion error: {time_val} | Error: {e}")
+
+    # Validate count
+    if len(timestamps) < 2:
+        msg = "Not enough timestamps to validate frequency."
+        print(msg)
+        testResult(
+            self,
+            "failed",
+            f"Telemetry frequency validation - {eventType}",
+            msg
+        )
+        return
+
+    # Sort timestamps
+    timestamps.sort()
+
+    expected_interval = push_freq / 1000
+    tolerance = 1  # seconds
+
+    time_differences = []
+    failure_count = 0
+
+    # Calculate differences with detailed debug
+    for i in range(1, len(timestamps)):
+        prev_ts = timestamps[i - 1]
+        curr_ts = timestamps[i]
+
+        diff = (curr_ts - prev_ts).total_seconds()
+        time_differences.append(diff)
+
+        deviation = diff - expected_interval
+
+        print(f"Event {i} → {i + 1}: {diff:.3f} sec")
+
+        #  Build detailed debug message
+        debug_message = (
+            f"\nEvent Index        : {i} -> {i+1}"
+            f"\nPrevious Timestamp : {prev_ts}"
+            f"\nCurrent Timestamp  : {curr_ts}"
+            f"\nExpected Interval  : {expected_interval:.3f} sec"
+            f"\nActual Interval    : {diff:.3f} sec"
+            f"\nDeviation          : {deviation:.3f} sec"
+            f"\nTolerance Allowed  : ±{tolerance} sec"
+        )
+
+        if abs(diff - expected_interval) <= tolerance:
+            testResult(
+                self,
+                "passed",
+                f"Telemetry frequency validation - {eventType}",
+                "PASS" + debug_message
+            )
+        else:
+            failure_count += 1
+            testResult(
+                self,
+                "failed",
+                f"Telemetry frequency validation - {eventType}",
+                "FAIL " + debug_message
+            )
+
+    # Summary (very helpful for debugging)
+    print("\n[SUMMARY]")
+    print(f"Total Events Checked : {len(time_differences)}")
+    print(f"Failures             : {failure_count}")
+
+    for i, diff in enumerate(time_differences, 1):
+        print(f"{i}: {diff:.3f} sec")
+
+    # Final overall result (optional but very useful)
+    if failure_count == 0:
+        testResult(
+            self,
+            "passed",
+            f"Telemetry frequency validation summary - {eventType}",
+            f"All {len(time_differences)} intervals are within tolerance."
+        )
+    else:
+        testResult(
+            self,
+            "failed",
+            f"Telemetry frequency validation summary - {eventType}",
+            f"{failure_count} out of {len(time_differences)} intervals failed."
+        )
 
 def vehicle_conf_command_precondition_update(self, onboardingType, chipsetType, tc):
     print("* * * * * * * * * * * * * * * * * * * * * * * * * * * ")
@@ -4976,20 +5098,27 @@ def vehicle_conf_telemtry_addRemove_new_block(self, onboardingType, chipsetType,
     if tc == "normal_mode":
         if option == "ADD_NEW_TELEMETRY_BLOCK":
             action = "ADD"
-            path = "vehicle_settings.telemetry.normal_mode.events"
-            value = {"batch_frequency": 1, "acc_size": 0, "acc_enable": False, "enable_flag": True,
-                     "ena_dis_op_suportd": True, "priority_index": 0, "filter_plugin": [], "block_id": 1001,
-                     "ddl_budget": 0, "ddl_timeout": 0, "ddl_flag": 0, "sms_flag": False, "reason_code": 0,
-                     "push_freq": 20000, "qos": 1, "msg_type": 304, "notif_type": -1,
-                     "attributes": [1252004033598587000, 2404938959978234000, 2404939801791824000, 2404939797496856600,
-                                    2404939810381758500, 2404939814676726000, 2404924404334067700, 2404924408629035000,
-                                    2404924412924002300, 2404924417218969600, 2404933217606959000, 2405133367377920000,
-                                    2405133371672887300, 2405133375967854600, 2405133380262822000, 2405133406032625700,
-                                    2405133410327593000, 2405133414622560000, 2405133418917527600, 2405133384557789000,
-                                    2405133388852756500]}
+            if cloudEnv in r8_patch4_sp17_envs:
+                path = "vehicle_settings.telemetry.events"
+                value = {"batch_frequency":0,"batch_size":0,"acc_size":0,"acc_enable":False,"enable_flag":{"normal_mode":1,"vacation_mode":1,"privacy_mode":0,"incognito_mode":0,"remote_diagnostic_mode":1,"service_mode":1},"ena_dis_op_suportd":True,"priority_index":0,"filter_plugin":[],"block_id":3101,"reason_code":0,"push_freq":{"normal_mode":5000,"vacation_mode":10000,"privacy_mode":10000,"incognito_mode":10000,"remote_diagnostic_mode":10000,"service_mode":10000},"ddl_budget":0,"ddl_timeout":0,"ddl_flag":0,"sms_flag":0,"hmi_flag":0,"msg_type":304,"tele_flag":0,"notif_type":0,"attributes":[2396058015582126080,2404924404334067712,2404924408629035008,2404924412924002304,2404924417218969600,2404933217606959104,2382615369241067520,2382615373536034816,2382615377831002112,2396073365795241984,2400629780635451392,2405133406032625664,2405133410327592960,2405133414622560256,2405133418917527552,2382615386420936704,2382615390715904000,2382615395010871296,2382615399305838592,2382615403600805888,2382615407895773184,2382615412190740480,2382615416485707776,2382615420780675072,2382615425075642368,2382615446550478848,2382615450845446144,2382615455140413440,2382615459435380736]}
+            else:
+                path = "vehicle_settings.telemetry.normal_mode.events"
+                value = {"batch_frequency": 1, "acc_size": 0, "acc_enable": False, "enable_flag": True,
+                         "ena_dis_op_suportd": True, "priority_index": 0, "filter_plugin": [], "block_id": 1001,
+                         "ddl_budget": 0, "ddl_timeout": 0, "ddl_flag": 0, "sms_flag": False, "reason_code": 0,
+                         "push_freq": 20000, "qos": 1, "msg_type": 304, "notif_type": -1,
+                         "attributes": [1252004033598587000, 2404938959978234000, 2404939801791824000, 2404939797496856600,
+                                        2404939810381758500, 2404939814676726000, 2404924404334067700, 2404924408629035000,
+                                        2404924412924002300, 2404924417218969600, 2404933217606959000, 2405133367377920000,
+                                        2405133371672887300, 2405133375967854600, 2405133380262822000, 2405133406032625700,
+                                        2405133410327593000, 2405133414622560000, 2405133418917527600, 2405133384557789000,
+                                        2405133388852756500]}
         elif option == "REMOVE_TELEMETRY_BLOCK":
             action = "DELETE"
-            path = "vehicle_settings.telemetry.normal_mode.events.126"
+            if cloudEnv in r8_patch4_sp17_envs:
+                path = "vehicle_settings.telemetry.events.126"
+            else:
+                path = "vehicle_settings.telemetry.normal_mode.events.126"
         else:
             print("Invalid Option")
     elif tc == "vacation_mode":
@@ -5324,19 +5453,23 @@ def vehicle_conf_telemtry_addRemove_new_block(self, onboardingType, chipsetType,
         # Validate response message
         if response_body["message"] == "Success":
             vehicle_features = ""
-            if tc == "normal_mode":
-                vehicle_features = \
-                    response_body["configurations"]["vehicle_settings"]["telemetry"]["normal_mode"]["events"]
-            elif tc == "vacation_mode":
-                vehicle_features = \
-                    response_body["configurations"]["vehicle_settings"]["telemetry"]["vacation_mode"]["events"]
-            elif tc == "privacy_mode":
-                vehicle_features = \
-                    response_body["configurations"]["vehicle_settings"]["telemetry"]["privacy_mode"]["events"]
-            elif tc == "incognito_mode":
-                vehicle_features = \
-                    response_body["configurations"]["vehicle_settings"]["telemetry"]["incognito_mode"]["events"]
-
+            if cloudEnv in r8_patch4_sp17_envs:
+                if tc == "normal_mode":
+                    vehicle_features = \
+                        response_body["configurations"]["vehicle_settings"]["telemetry"]["normal_mode"]["events"]
+                elif tc == "vacation_mode":
+                    vehicle_features = \
+                        response_body["configurations"]["vehicle_settings"]["telemetry"]["vacation_mode"]["events"]
+                elif tc == "privacy_mode":
+                    vehicle_features = \
+                        response_body["configurations"]["vehicle_settings"]["telemetry"]["privacy_mode"]["events"]
+                elif tc == "incognito_mode":
+                    vehicle_features = \
+                        response_body["configurations"]["vehicle_settings"]["telemetry"]["incognito_mode"]["events"]
+            else:
+                if tc in ["normal_mode", "vacation_mode", "privacy_mode", "incognito_mode"]:
+                    vehicle_features = \
+                        response_body["configurations"]["vehicle_settings"]["telemetry"]["events"]
             # Check if 'push_freq' key exists
             if option == "ADD_NEW_TELEMETRY_BLOCK":
                 if attribute in vehicle_features:

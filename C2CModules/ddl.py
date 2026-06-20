@@ -1,22 +1,15 @@
-import ast
-import json
 import os.path
-import time
-import requests
 import re
+from datetime import datetime, timezone, timedelta
+
 import zstandard as zstd
 
-from C2CModules.api_modules import header_update
-from C2CModules.resuse_modules import save_api_resp_into_file
-from C2CModules.token_generation import token_gen_reus_mod, update_apiheader_with_token_inExcel
-from utils.XLUtils import read_api_data_from_excel, save_api_resp_in_excel
 from C2CModules.primary_IVI_device_modules import *
-from C2CModules.e2e_testData import *
 from C2CModules.testResults import testResult
 
 onboardingType = deviceType = deviceType_IVI
 chipsetType = b2c_ivi_chipset
-netwrokType = wifi
+networkType = wifi
 deviceSerialNo = b2c_ivi_adbSerialNo
 
 
@@ -184,7 +177,7 @@ def decompress_downloaded_files_from_folder(self, tc, successful_filenames):
     if not successful_filenames:
         print(f"No successful filenames provided.")
         assert False
-        return
+        # return
 
     print(f"Found {len(successful_filenames)} successful filenames.")
 
@@ -355,7 +348,7 @@ def validate_telemetry_data_from_decompressed_file_v2(self, tc):
 # ---------------------------------------------------------------
 # DDL New Reusable modules
 # --------------------------------------------------------------
-def ddl_get_file_metadata(self, offset, limit, systemId, tc):
+def ddl_get_file_metadata(self, offset, limit, systemId, startTime, endTime, tc):
     # Read api test data from excel sheet
     dict = read_api_data_from_excel(self, "API_Data", "DDL_file_meta")
     base_url = str(dict["Base Url"])
@@ -376,6 +369,10 @@ def ddl_get_file_metadata(self, offset, limit, systemId, tc):
     json_object = json.loads(payload)
     if tc == "systemId":
         json_object["systemIds"][0] = systemId
+    elif tc == "systemId_with_time":
+        json_object["systemIds"][0] = systemId
+        json_object["startTime"] = startTime
+        json_object["endTime"] = endTime
     payload = json_object
     print("Payload : ", payload)
 
@@ -417,16 +414,23 @@ def ddl_download_file_by_uploadId(self, uploadId, action, tc):
     print("Payload : ", payload)
 
     # Act: Send POST request to create the vehicle group
-    response = requests.get(complete_url, headers=header_x, data=json.dumps(payload), stream=True)
+    response = requests.get(complete_url, headers=header_x, stream=True)
+    #print("API Response: ", response.status_code)
+    #response_body = response.json()
+    #print(response_body)
+
 
     return response
 
 
-def get_file_metadata(self, offset, limit, systemId, tc):
+def get_file_metadata(self, offset, limit, systemId, startTime, endTime, tc):
     uploadId = file_name = None
 
     # reusable function to get the file metadata
-    response = ddl_get_file_metadata(self, offset, limit, systemId, "systemId")
+    if "TELEMETRY_FILE" in tc:
+        response = ddl_get_file_metadata(self, offset, limit, systemId, startTime, endTime, "systemId_with_time")
+    else:
+        response = ddl_get_file_metadata(self, offset, limit, systemId, startTime, endTime, "systemId")
 
     if response.status_code == 200:
 
@@ -474,7 +478,7 @@ def get_file_metadata(self, offset, limit, systemId, tc):
                     print("File Created Time: ", response_body["metaData"][i]["file-created-time"])
                     print("Upload Id: ", uploadId)
                     print("System Id: ", response_body["metaData"][i]["system_id"])
-                    print("vin: ", response_body["metaData"][i]["vin"])
+                   # print("vin: ", response_body["metaData"][i]["vin"])
                     print("file_upload_time: ", response_body["metaData"][i]["file-upload-time"])
                     print("file_name: ", file_name)
 
@@ -510,8 +514,13 @@ def get_and_download_ddl_file_v2(self, systemId, file, tc):
     elif "TELEMETRY_FILE" in file:
         download_folder = r"C:\Car2Cloud_E2ETesting\C2CtestReport\e2eExecution_Backup\Telemetry_File"
     offset = "1"
-    limit = "500"
+    limit = "10"
     action = "DOWNLOAD"
+
+    now = datetime.now(tz=timezone.utc)
+
+    endTime = int(now.timestamp() * 1000)
+    startTime = int((now - timedelta(minutes=10)).timestamp() * 1000)
 
     # Ensure directories exist
     os.makedirs(download_folder, exist_ok=True)
@@ -530,11 +539,11 @@ def get_and_download_ddl_file_v2(self, systemId, file, tc):
     successful_filenames = []
 
     if "DDL_FILE" in file:
-        uploadId, file_name = get_file_metadata(self, offset, limit, systemId, "DDL_FILE")
+        uploadId, file_name = get_file_metadata(self, offset, limit, systemId, startTime, endTime,"DDL_FILE")
     elif "REMOTE_DIAGNOSTIC_FILE" in file:
-        uploadId, file_name = get_file_metadata(self, offset, limit, systemId, "REMOTE_DIAGNOSTIC_FILE")
+        uploadId, file_name = get_file_metadata(self, offset, limit, systemId, startTime, endTime, "REMOTE_DIAGNOSTIC_FILE")
     elif "TELEMETRY_FILE" in file:
-        uploadId, file_name = get_file_metadata(self, offset, limit, systemId, "TELEMETRY_FILE")
+        uploadId, file_name = get_file_metadata(self, offset, limit, systemId, startTime, endTime, "TELEMETRY_FILE")
     uploadId = str(uploadId)
     filename = file_name
 
@@ -677,11 +686,13 @@ def decompress_downloaded_files_from_folder_v2(self, tc, successful_filenames, o
 
 def validate_telemetry_data_from_decompressed_file_v3(self, cloudEnv, file, tc):
     # Determine folder path (avoid overwriting by using elif)
-    if cloudEnv in ["GCP-QA4", "GCP-QA5", "PRE-PROD", "GCP-QA8", "GCP-QA2", "GCP-PERF2"]:
+    if any(cloudEnv in lst for lst in (r8_patch2_envs, r8_patch3_envs, r8_patch_envs_hmac)):
         if "DDL_FILE" in file:
             folder_path = r"C:\Car2Cloud_E2ETesting\C2CtestReport\e2eExecution_Backup\DDL_File"
         elif "REMOTE_DIAGNOSTIC_FILE" in file:
             folder_path = r"C:\Car2Cloud_E2ETesting\C2CtestReport\e2eExecution_Backup\Remote_Diagnostic_File"
+        elif "TELEMETRY_FILE" in file:
+            folder_path = r"C:\Car2Cloud_E2ETesting\C2CtestReport\e2eExecution_Backup\Telemetry_File"
         else:
             print("[ERROR] Unknown file type.")
             return
@@ -690,6 +701,8 @@ def validate_telemetry_data_from_decompressed_file_v3(self, cloudEnv, file, tc):
             folder_path = r"C:\Car2Cloud_E2ETesting\C2CtestReport\e2eExecution_Backup\DDL_File\DDL_Converted_JSON_File"
         elif "REMOTE_DIAGNOSTIC_FILE" in file:
             folder_path = r"C:\Car2Cloud_E2ETesting\C2CtestReport\e2eExecution_Backup\Remote_Diagnostic_File\Remote_Diagnostic_Converted_JSON_File"
+        elif "TELEMETRY_FILE" in file:
+            folder_path = r"C:\Car2Cloud_E2ETesting\C2CtestReport\e2eExecution_Backup\Remote_Diagnostic_File\Telemetry_Converted_JSON_File"
         else:
             print("[ERROR] Unknown file type.")
             return
@@ -882,5 +895,3 @@ def ddl_delete_file(self, uploadId, tc):
     response = requests.delete(complete_url, headers=header_x, data=json.dumps(payload), stream=True)
 
     return response
-
-

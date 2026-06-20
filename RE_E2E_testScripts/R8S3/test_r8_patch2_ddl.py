@@ -312,7 +312,7 @@ class Test_ddl_v2:
 
 class Test_ddl_v3:
 
-    def test1_positive_deep_logging_download_file_user_role_masked_v2(self):
+    def test1_positive_deep_logging_download_file_user_role_masked_v3(self):
         print("\n================Start Test Execution================")
 
         print("----------------------------------------------------------")
@@ -354,7 +354,7 @@ class Test_ddl_v3:
         # Verify notification msgs & type code in fetched device logs
         #ls = verify_message_in_log(self, crash_alert_notification_deviceLog_string,
          #                          crash_alert_notification_deviceLog_string)
-        print(ls)
+        #print(ls)
 
         cloudEnv = read_cloud_env(self)
 
@@ -369,7 +369,7 @@ class Test_ddl_v3:
         print("-----------------------------")
 
         # verify live location status & response for single systemId & eventId
-        #systemId = read_vehicleJsonFile(self, "system_id")
+        systemId = read_vehicleJsonFile(self, "system_id")
         #systemId = '_Zuty6zrAVcMAk5ICtoZ9'
 
         print("System Id : ", systemId)
@@ -384,8 +384,8 @@ class Test_ddl_v3:
         pull_logs_from_IVI_device(self, onboardingType, chipsetType)
         #time.sleep(60)
 
-        successful_filenames = get_and_download_ddl_file_v2(self, systemId,"DDL_FILE", "TELEMETRY_FILE")
+        successful_filenames = get_and_download_ddl_file_v2(self, systemId,"TELEMETRY_FILE", "TELEMETRY_FILE")
         #decompress_downloaded_files_from_folder_v2(self, "ROLE_MASKED", successful_filenames)
         #decompress_downloaded_files_from_folder_v2(self, "ROLE_MASKED", successful_filenames, onboardingType, chipsetType)
-        validate_telemetry_data_from_decompressed_file_v3(self, cloudEnv, successful_filenames, "ROLE_MASKED")
+        validate_telemetry_data_from_decompressed_file_v3(self, cloudEnv, "TELEMETRY_FILE", "ROLE_MASKED")
 
